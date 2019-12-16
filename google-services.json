@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "834366555187",
+    "firebase_url": "https://digiaed.firebaseio.com",
+    "project_id": "digiaed",
+    "storage_bucket": "digiaed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834366555187:android:ef57221c31f570ddc0cf46",
+        "android_client_info": {
+          "package_name": "com.example.digiaed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834366555187-ncajpon6e4osj1a37sl68655lpgnns9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.digiaed",
+            "certificate_hash": "69c59169ac890086686a8e4469e051594c7465ec"
+          }
+        },
+        {
+          "client_id": "834366555187-vak90f9caq57j2ric0cig9gu117e3gju.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMN331TOhe7Km7LjuzhO6eI3nXi_fpr3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "834366555187-vak90f9caq57j2ric0cig9gu117e3gju.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
