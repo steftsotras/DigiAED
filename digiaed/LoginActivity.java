@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -36,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText log_email;
     private EditText log_password;
     private Button login_btn;
+    private TextView viewSignup;
     private GoogleSignInClient mGoogleSignInClient;
 
     //Google Sign In Variables
@@ -55,6 +58,14 @@ public class LoginActivity extends AppCompatActivity {
         log_email = (EditText)findViewById(R.id.log_email);
         log_password = (EditText)findViewById(R.id.log_pasword);
         login_btn = (Button) findViewById(R.id.log_btn);
+        viewSignup = (TextView) findViewById(R.id.textViewSignup);
+        viewSignup.setText(Html.fromHtml("Don't have an account? <b><u>Sign Up!</u></b>"));
+        viewSignup.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            }
+        });
 
         login_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -71,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                    startActivity(new Intent(LoginActivity.this, AEDMapActivity.class));
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -128,13 +139,13 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            // Signed in successfully, show authenticated UI.
-            //updateUI(account);
+            // Signed in successfully.
+            startActivity(new Intent(LoginActivity.this, AEDMapActivity.class));
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            //updateUI(null);
+            Toast.makeText(this, "Failed to Sign In", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -144,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        //startActivity(new Intent(LoginActivity.this, AEDMapActivity.class));
     }
 
 
