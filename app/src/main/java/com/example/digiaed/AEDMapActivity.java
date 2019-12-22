@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,9 +28,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+
+    private static final String TAG = AEDMapActivity.class.getName();
 
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
@@ -49,10 +55,15 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
 
     private Marker curraddmarker;
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aedmap);
+
+        getDataFromDatabase();
+
         getLocationPermission();
         ic_plus = (ImageView) findViewById(R.id.ic_plus);
         ic_list = (ImageView) findViewById(R.id.ic_layers);
@@ -62,6 +73,28 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
 
         currentMarkerLat=0.00;
         currentMarkerLon=0.00;
+
+
+    }
+
+    private void getDataFromDatabase(){
+
+        db.collection("AEDMap")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                            }
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
     }
 
     private void initMap(){

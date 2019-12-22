@@ -38,9 +38,11 @@ public class FetchAddressIntentService extends IntentService {
         double lat = intent.getDoubleExtra("Lat",0.00);
         double lon = intent.getDoubleExtra("Lon",0.00);
 
-        receiver = intent.getParcelableExtra("RECEIVER");
+        //receiver = intent.getParcelableExtra("RECEIVER");
 
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        Log.d(TAG,"Lat: "+lat+"Lon: "+lon);
+
+        Geocoder geocoder = new Geocoder(FetchAddressIntentService.this, Locale.getDefault());
 
         List<Address> addresses = null;
 
@@ -87,6 +89,7 @@ public class FetchAddressIntentService extends IntentService {
     private void deliverResultToReceiver(int resultCode, String message) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
+        Log.d(TAG,message);
         receiver.send(resultCode, bundle);
     }
 

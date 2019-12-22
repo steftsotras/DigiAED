@@ -4,65 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".addMarkerActivity">
+    tools:context=".addMarkerActivity"
+    tools:layout_editor_absoluteY="81dp">
 
 
-    <EditText
-        android:id="@+id/textAedName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:hint="Name"
-        android:inputType="text"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="350dp"
+        android:layout_height="150dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAedAdr" />
+        app:layout_constraintTop_toBottomOf="@+id/textAedAdr">
 
-    <EditText
-        android:id="@+id/textAedDescr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:hint="Description"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAedName" />
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="185dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            tools:layout_editor_absoluteX="63dp"
+            tools:layout_editor_absoluteY="322dp">
+
+            <EditText
+                android:id="@+id/textAedName"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/textAedDescr"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="Description"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="17dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+
+            <ImageView
+                android:id="@+id/imgAdd"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_ap2" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textAedAdr"
-        android:layout_width="296dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="329dp"
+        android:layout_height="97dp"
+        android:layout_marginTop="8dp"
         android:text=""
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.524"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
-
 
     <ProgressBar
         android:id="@+id/progressBar3"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="300dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="324dp"
+        android:layout_height="161dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".addMarkerActivity" />
@@ -71,40 +108,12 @@
         android:id="@+id/btnAddAed"
         android:layout_width="168dp"
         android:layout_height="48dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:text="Add Marker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar3" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="237dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="13dp"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAedDescr">
 
-
-        <ImageView
-            android:id="@+id/imgAdd"
-            android:layout_width="49dp"
-            android:layout_height="36dp"
-            tools:layout_editor_absoluteX="99dp"
-            tools:layout_editor_absoluteY="386dp"
-            android:src="@drawable/ic_ap2" />``
-
-        <TextView
-            android:id="@+id/textPhoto"
-            android:layout_width="119dp"
-            android:layout_height="22dp"
-            android:text=""
-            tools:layout_editor_absoluteX="190dp"
-            tools:layout_editor_absoluteY="400dp" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -36,13 +36,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import com.google.firebase.firestore.GeoPoint;
 
 import static android.content.ContentValues.TAG;
 
@@ -50,7 +57,7 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
 
     private static final String TAG = addMarkerActivity.class.getName();
 
-    private TextView textPhoto,textAddress;
+    private TextView textAddress;
     private EditText textDescr,textName;
     private ProgressBar progressBar3;
     private Button addAed;
@@ -68,21 +75,28 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
     private Uri imguri=null;
     private StorageReference mStorageRef;
 
+    private String imgUrl;
     private AddressResultReceiver resultReceiver;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_marker);
 
+        showAddress=false;
+        imgUrl = "";
+
         mStorageRef = FirebaseStorage.getInstance().getReference("Images");
+        db = FirebaseFirestore.getInstance();
 
         //Call async intent to get location
         intent = getIntent();
         lat = intent.getDoubleExtra("Lat",0.00);
         lon = intent.getDoubleExtra("Lon",0.00);
 
-        showAddress=false;
+
 
         //startIntentService(lat,lon);
         getAddress(lat,lon);
@@ -91,7 +105,6 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         //******************
         //GET XML VARIABLES
         //******************
-        textPhoto = (TextView) findViewById(R.id.textPhoto);
         textAddress = (TextView) findViewById(R.id.textAedAdr);
         textDescr = (EditText) findViewById(R.id.textAedDescr);
         textName = (EditText) findViewById(R.id.textAedName);
@@ -109,12 +122,37 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         addAed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(imguri != null){
                     FileUploader();
                 }
-                else{
-                    //upload other stuff
-                }
+
+                //Fetch texts
+                String AEDName = textName.getText().toString();
+                String AEDDescr = textDescr.getText().toString();
+
+                GeoPoint geoloc = new GeoPoint(lat, lon);
+
+                //Save to Database
+                Map<String, Object> aed = new HashMap<>();
+                aed.put("Description",AEDDescr);
+                aed.put("Geolocation",geoloc);
+                aed.put("ImageUrl",imgUrl);
+                aed.put("Name",AEDName);
+
+                db.collection("AEDMap").add(aed).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+
             }
         });
 
@@ -130,13 +168,28 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
     //Upload Image to Firebase Storage
     private void FileUploader(){
 
+
+
         StorageReference ref = mStorageRef.child(System.currentTimeMillis()+"."+getExtension(imguri));
 
         ref.putFile(imguri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        Task<Uri> downloadUrl = taskSnapshot.getStorage().getDownloadUrl();
+                        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Log.d(TAG,"Image Upload Success, url: "+uri.toString());
+                                if(uri.toString()!=null) {
+                                    imgUrl = uri.toString();
+                                }
+                            }
+                        });
+
                         // Get a URL to the uploaded content
+
                         //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     }
                 })
@@ -144,7 +197,7 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle unsuccessful uploads
-                        // ...
+                        Log.d(TAG,"Image Failed to Upload");
                     }
                 });
 

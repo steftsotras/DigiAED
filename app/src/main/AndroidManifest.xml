@@ -34,6 +34,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <service
+            android:name=".FetchAddressIntentService"
+            android:exported="false"/>
+
         <activity
             android:name=".AEDMapActivity"
             android:label="@string/title_activity_aedmap" >
