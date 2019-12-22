@@ -4,14 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,11 +32,19 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.ContentValues.TAG;
 
 public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -47,6 +59,15 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
     private Intent intent;
     protected Location lastLocation;
 
+    private double lat;
+    private double lon;
+
+    private List<Address> addresses;
+
+    private boolean showAddress;
+    private Uri imguri=null;
+    private StorageReference mStorageRef;
+
     private AddressResultReceiver resultReceiver;
 
     @Override
@@ -54,12 +75,18 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_marker);
 
+        mStorageRef = FirebaseStorage.getInstance().getReference("Images");
+
         //Call async intent to get location
         intent = getIntent();
-        double lat = intent.getDoubleExtra("Lat",0.00);
-        double lon = intent.getDoubleExtra("Lon",0.00);
+        lat = intent.getDoubleExtra("Lat",0.00);
+        lon = intent.getDoubleExtra("Lon",0.00);
 
-        startIntentService(lat,lon);
+        showAddress=false;
+
+        //startIntentService(lat,lon);
+        getAddress(lat,lon);
+        initMap();
 
         //******************
         //GET XML VARIABLES
@@ -72,10 +99,118 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         addAed = (Button) findViewById(R.id.btnAddAed);
         imgAdd = (ImageView) findViewById(R.id.imgAdd);
 
+        imgAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileChooser();
+            }
+        });
 
+        addAed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(imguri != null){
+                    FileUploader();
+                }
+                else{
+                    //upload other stuff
+                }
+            }
+        });
 
     }
 
+    //Get Image Extension
+    public String getExtension(Uri uri){
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(cr.getType(uri));
+    }
+
+    //Upload Image to Firebase Storage
+    private void FileUploader(){
+
+        StorageReference ref = mStorageRef.child(System.currentTimeMillis()+"."+getExtension(imguri));
+
+        ref.putFile(imguri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
+                    }
+                });
+
+    }
+
+    //Choose Picture
+    public void FileChooser(){
+        Intent fileintent = new Intent();
+        fileintent.setType("image/'");
+        fileintent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(fileintent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+            imguri=data.getData();
+            imgAdd.setImageURI(imguri);
+
+        }
+    }
+
+
+    //Geocoder Location Address
+    public void getAddress(double lat, double lon){
+        String errorMessage = "";
+        addresses=null;
+
+        Geocoder geocoder = new Geocoder(addMarkerActivity.this,Locale.getDefault());
+        try{
+
+            addresses = geocoder.getFromLocation(lat, lon, 1); //1 num of possible location returned
+
+        } catch (IOException ioException) {
+            // Catch network or other I/O problems.
+            errorMessage = "service not available";
+            Log.e(TAG, errorMessage, ioException);
+
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // Catch invalid latitude or longitude values.
+            errorMessage = "invalid lat lon";
+            Log.e(TAG, errorMessage + ". " +
+                    "Latitude = " + lat +
+                    ", Longitude = " +
+                    lon, illegalArgumentException);
+        }
+
+        // Handle case where no address was found.
+        if (addresses == null || addresses.size()  == 0) {
+            if (errorMessage.isEmpty()) {
+                errorMessage = "No adrress found";
+                Log.e(TAG, errorMessage);
+            }
+            //deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+        } else {
+
+            showAddress = true;
+            //Toast.makeText(addMarkerActivity.this, title, Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+    //API recommended way to fetch geocoding addresses
     protected void startIntentService(double lat, double lon){
         Intent addressIntent = new Intent(addMarkerActivity.this,FetchAddressIntentService.class);
         addressIntent.putExtra(Constants.RECEIVER,resultReceiver);
@@ -84,6 +219,8 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         startService(addressIntent);
     }
 
+
+    //Initialize Map
     public void initMap(){
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -99,33 +236,34 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         //******************
         mMap = googleMap;
 
+        LatLng markerInfo = new LatLng(lat, lon);
+        Marker mMarker = mMap.addMarker(new MarkerOptions().position(markerInfo));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerInfo, 17f));
 
 
-        //String address = addresses.get(0).getAddressLine(0); //0 to obtain first possible address
-        //String city = addresses.get(0).getLocality();
-        //String state = addresses.get(0).getAdminArea();
-        //String country = addresses.get(0).getCountryName();
-        //String postalCode = addresses.get(0).getPostalCode();
+        //If fetching address was successfull show address data
+        if(showAddress){
 
-        //String title = address + ", " + city + ", " + state;
+            String address = addresses.get(0).getAddressLine(0); //0 to obtain first possible address
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
 
-        // Add a marker in Sydney and move the camera
-        //LatLng markerInfo = new LatLng(lat, lon);
-        //mMap.addMarker(new MarkerOptions().position(markerInfo).title(title));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerInfo, 17f));
+            String title = address + ", " + city + ", " + state;
 
+            mMarker.setTitle(title);
 
-        //******************
-        //SET ADDRESS TEXTVIEW
-        //******************
-        //textAddress.setText(title + "\n" + country + ", " + postalCode);
+            textAddress.setText(title + "\n" + country + ", " + postalCode);
 
-
-
-
-
+        }
+        else{
+            mMarker.setTitle("Lat: "+lat+", Lon: "+lon);
+        }
     }
 
+
+    //Recieve Address from Service Intent
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);

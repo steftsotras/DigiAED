@@ -11,12 +11,11 @@
         android:id="@+id/textAedName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginLeft="56dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:ems="10"
-        android:inputType="text"
         android:hint="Name"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textAedAdr" />
 
@@ -24,37 +23,37 @@
         android:id="@+id/textAedDescr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginLeft="56dp"
         android:layout_marginTop="12dp"
         android:ems="10"
-        android:inputType="text"
         android:hint="Description"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textAedName" />
 
     <TextView
         android:id="@+id/textAedAdr"
-        android:layout_width="300dp"
-        android:layout_height="74dp"
+        android:layout_width="296dp"
+        android:layout_height="46dp"
         android:layout_marginTop="20dp"
-        android:text="TextView"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
+
 
     <ProgressBar
         android:id="@+id/progressBar3"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="8dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textAedDescr" />
-
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <fragment
         android:id="@+id/map"
@@ -72,39 +71,40 @@
         android:id="@+id/btnAddAed"
         android:layout_width="168dp"
         android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:text="Add Marker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar3" />
 
-    <ImageView
-        android:id="@+id/imgAdd"
-        android:layout_width="76dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginRight="52dp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="237dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="13dp"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textAedName"
-        app:layout_constraintTop_toBottomOf="@+id/textAedAdr"
-        tools:srcCompat="@drawable/ic_addphoto" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAedDescr">
 
-    <TextView
-        android:id="@+id/textPhoto"
-        android:layout_width="91dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textAedDescr"
-        app:layout_constraintTop_toBottomOf="@+id/imgAdd" />
 
+        <ImageView
+            android:id="@+id/imgAdd"
+            android:layout_width="49dp"
+            android:layout_height="36dp"
+            tools:layout_editor_absoluteX="99dp"
+            tools:layout_editor_absoluteY="386dp"
+            android:src="@drawable/ic_ap2" />``
+
+        <TextView
+            android:id="@+id/textPhoto"
+            android:layout_width="119dp"
+            android:layout_height="22dp"
+            android:text=""
+            tools:layout_editor_absoluteX="190dp"
+            tools:layout_editor_absoluteY="400dp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
