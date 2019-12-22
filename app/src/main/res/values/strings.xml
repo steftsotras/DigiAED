@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DigiAED</string>
+    <string name="title_activity_aedmap">Map</string>
+    <string name="title_activity_admin_aedmap">Map</string>
+    <string name="title_activity_add_marker">Map</string>
+    <string name="google_maps_key">AIzaSyAMN331TOhe7Km7LjuzhO6eI3nXi_fpr3g</string>
+</resources>
