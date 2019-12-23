@@ -18,19 +18,24 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
@@ -56,24 +61,24 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
     private Marker curraddmarker;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private List<Map<String,Object>> markerMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aedmap);
 
-        getDataFromDatabase();
+        currentMarkerLat=0.00;
+        currentMarkerLon=0.00;
+        markerMap = new ArrayList<Map<String,Object>>();
 
         getLocationPermission();
+
         ic_plus = (ImageView) findViewById(R.id.ic_plus);
         ic_list = (ImageView) findViewById(R.id.ic_layers);
         addMarker = (ImageView) findViewById(R.id.addMarker);
         cancel = (ImageView) findViewById(R.id.cancel);
         textConfirm = (TextView) findViewById(R.id.textConfirm);
-
-        currentMarkerLat=0.00;
-        currentMarkerLon=0.00;
-
 
     }
 
@@ -88,7 +93,16 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
+                                //Get data and save on list
+
+                                Map<String,Object> markerEntry = document.getData();
+                                markerEntry.put("Id",document.getId());
+                                Log.d(TAG, "List object : "+markerEntry);
+                                markerMap.add(markerEntry);
+
                             }
+
+                            setMarkersOnMap();
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
                         }
@@ -117,6 +131,7 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        getDataFromDatabase();
 
         // Add a marker in Sydney and move the camera
         //LatLng hellas = new LatLng(38.311449, 25.022821);
@@ -128,10 +143,12 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
 
+        //setMarkersOnMap();
+
         if(mLocationPermissionGranted){
             getDeviceLocation();
-
         }
+
 
         ic_plus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +220,33 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
                 currentMarkerLon=curraddmarker.getPosition().longitude;
             }
         });
+
+    }
+
+    private void setMarkersOnMap(){
+
+        if(!markerMap.isEmpty()){
+            for(int i=0; i<markerMap.size(); i++){
+                String desc = (String) markerMap.get(i).get("Description");
+                String name = (String) markerMap.get(i).get("Name");
+                String imgUrl = (String) markerMap.get(i).get("ImageUrl");
+                GeoPoint geoPoint = (GeoPoint) markerMap.get(i).get("Geolocation");
+
+                Log.d(TAG,"name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
+
+                String snippet = "'"+desc+"' "+geoPoint.getLatitude()+","+geoPoint.getLongitude();
+
+                MarkerOptions options = new MarkerOptions().position(new LatLng(geoPoint.getLatitude(),geoPoint.getLongitude()))
+                                                            .title(name)
+                                                           .snippet(snippet)
+                                                           .icon(BitmapDescriptorFactory.fromResource(R.drawable.aedmap6));
+
+                mMap.addMarker(options);
+            }
+        }
+        else{
+            Log.d(TAG,"markeMap is Empty");
+        }
 
     }
 

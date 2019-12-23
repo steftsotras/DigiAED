@@ -123,6 +123,9 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onClick(View v) {
 
+                progressBar3.setVisibility(View.VISIBLE);
+
+                //Upload image if there is one
                 if(imguri != null){
                     FileUploader();
                 }
@@ -130,6 +133,11 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                 //Fetch texts
                 String AEDName = textName.getText().toString();
                 String AEDDescr = textDescr.getText().toString();
+
+                if(AEDName =="" || AEDDescr==""){
+                    Toast.makeText(addMarkerActivity.this, "Enter Name and Description", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 GeoPoint geoloc = new GeoPoint(lat, lon);
 
@@ -144,12 +152,16 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+
+                        progressBar3.setVisibility(View.GONE);
+                        startActivity(new Intent(addMarkerActivity.this, AEDMapActivity.class));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
+                        progressBar3.setVisibility(View.GONE);
                     }
                 });
 
@@ -167,8 +179,6 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
 
     //Upload Image to Firebase Storage
     private void FileUploader(){
-
-
 
         StorageReference ref = mStorageRef.child(System.currentTimeMillis()+"."+getExtension(imguri));
 
