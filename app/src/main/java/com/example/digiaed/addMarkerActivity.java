@@ -126,37 +126,46 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                 progressBar3.setVisibility(View.VISIBLE);
 
                 //Upload image if there is one
-                if(imguri != null){
-                    FileUploader();
-                }
+                FileUploader();
 
-                //Fetch texts
-                String AEDName = textName.getText().toString();
-                String AEDDescr = textDescr.getText().toString();
+            }
+        });
 
-                if(AEDName =="" || AEDDescr==""){
-                    Toast.makeText(addMarkerActivity.this, "Enter Name and Description", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+    }
 
-                GeoPoint geoloc = new GeoPoint(lat, lon);
 
-                //Save to Database
-                Map<String, Object> aed = new HashMap<>();
-                aed.put("Description",AEDDescr);
-                aed.put("Geolocation",geoloc);
-                aed.put("ImageUrl",imgUrl);
-                aed.put("Name",AEDName);
+    //Put in Cloud Firestore
+    public void addCollection(){
 
-                db.collection("AEDMap").add(aed).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+        //Fetch texts
+        String AEDName = textName.getText().toString();
+        String AEDDescr = textDescr.getText().toString();
 
-                        progressBar3.setVisibility(View.GONE);
-                        startActivity(new Intent(addMarkerActivity.this, AEDMapActivity.class));
-                    }
-                })
+        if(AEDName =="" || AEDDescr==""){
+            Toast.makeText(addMarkerActivity.this, "Enter Name and Description", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        GeoPoint geoloc = new GeoPoint(lat, lon);
+
+        //Save to Database
+        Map<String, Object> aed = new HashMap<>();
+        aed.put("Description",AEDDescr);
+        aed.put("Geolocation",geoloc);
+        aed.put("ImageUrl",imgUrl);
+        aed.put("Name",AEDName);
+
+        Log.d(TAG,"Image Url after putting it in the database"+imgUrl);
+
+        db.collection("AEDMap").add(aed).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+
+                progressBar3.setVisibility(View.GONE);
+                startActivity(new Intent(addMarkerActivity.this, AEDMapActivity.class));
+            }
+        })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -165,10 +174,8 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                     }
                 });
 
-            }
-        });
-
     }
+
 
     //Get Image Extension
     public String getExtension(Uri uri){
@@ -191,11 +198,16 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                         downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                Log.d(TAG,"Image Upload Success, url: "+uri.toString());
+
                                 if(uri.toString()!=null) {
                                     imgUrl = uri.toString();
                                 }
+                                Log.d(TAG,"Image Upload Success, uri.toString: "+uri.toString());
+                                Log.d(TAG,"Image Upload Success, imgUrl: "+imgUrl);
+
+                                addCollection();
                             }
+
                         });
 
                         // Get a URL to the uploaded content
