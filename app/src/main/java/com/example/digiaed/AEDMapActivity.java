@@ -1,6 +1,7 @@
 package com.example.digiaed;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -39,8 +40,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+
+
+public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
     private static final String TAG = AEDMapActivity.class.getName();
 
@@ -61,6 +66,8 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
     private double currentMarkerLon;
 
     private Marker curraddmarker;
+    private Toolbar toolbar;
+    private AppCompatDelegate delegate;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private List<Map<String,Object>> markerMap;
@@ -69,6 +76,12 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aedmap);
+
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        toolbar= (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
 
         currentMarkerLat=0.00;
         currentMarkerLon=0.00;
