@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -79,6 +81,15 @@ public class AEDMapActivity extends FragmentActivity implements OnMapReadyCallba
         addMarker = (ImageView) findViewById(R.id.addMarker);
         cancel = (ImageView) findViewById(R.id.cancel);
         textConfirm = (TextView) findViewById(R.id.textConfirm);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
 
     }
 

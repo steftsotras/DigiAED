@@ -4,12 +4,18 @@
     xmlns:showAsAction="http://schemas.android.com/tools">
 
     <item android:id="@+id/menu_log"
-        android:icon="@drawable/ic_loginAcc2"
+        android:icon="@drawable/ic_menuacc"
         android:title="Login"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/menu_as"
-        android:icon="@drawable/ic_loginAcc"
-        android:title="Login"/>
+    <item android:id="@+id/menu_cpr"
+        android:icon="@drawable/ic_cpr2"
+        android:title="CPR"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/menu_aed"
+        android:icon="@drawable/ic_aed"
+        android:title="CPR"
+        app:showAsAction="ifRoom"/>
 
 </menu>
