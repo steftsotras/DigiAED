@@ -161,8 +161,10 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //startActivity(new Intent(LoginActivity.this, AEDMapActivity.class));
+        if(mAuth.getCurrentUser() != null){
+            startActivity(new Intent(LoginActivity.this, LogoutActivity.class));
+        }
+
     }
 
 
