@@ -97,7 +97,6 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
         lon = intent.getDoubleExtra("Lon",0.00);
 
 
-
         //startIntentService(lat,lon);
         getAddress(lat,lon);
         initMap();
