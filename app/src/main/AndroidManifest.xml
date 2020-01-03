@@ -52,7 +52,8 @@
                   android:parentActivityName=".AEDMapActivity"></activity>
 
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:parentActivityName=".AEDMapActivity">
 
         </activity>
         <activity android:name=".MainActivity" />

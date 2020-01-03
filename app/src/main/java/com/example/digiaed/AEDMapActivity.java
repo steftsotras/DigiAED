@@ -56,10 +56,19 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private float DEFAULT_ZOOM = 15f;
 
     private ImageView ic_plus;
-    private ImageView ic_list;
+    private ImageView ic_acc;
+    private ImageView ic_cpr;
+    private ImageView ic_alert;
+    private ImageView ic_info;
     private ImageView addMarker;
     private ImageView cancel;
     private TextView textConfirm;
+
+    private TextView txt_plus;
+    private TextView txt_acc;
+    private TextView txt_cpr;
+    private TextView txt_alert;
+    private TextView txt_info;
 
     private Location currentLocation;
     private double currentMarkerLat;
@@ -77,10 +86,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aedmap);
 
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
-        toolbar= (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
 
 
         currentMarkerLat=0.00;
@@ -90,21 +96,43 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         getLocationPermission();
 
         ic_plus = (ImageView) findViewById(R.id.ic_plus);
-        ic_list = (ImageView) findViewById(R.id.ic_layers);
+        ic_acc = (ImageView) findViewById(R.id.ic_acc);
+        ic_cpr = (ImageView) findViewById(R.id.ic_cpr);
+        ic_alert = (ImageView) findViewById(R.id.ic_alert);
+        ic_info = (ImageView) findViewById(R.id.ic_info);
         addMarker = (ImageView) findViewById(R.id.addMarker);
         cancel = (ImageView) findViewById(R.id.cancel);
         textConfirm = (TextView) findViewById(R.id.textConfirm);
 
+        txt_plus = (TextView) findViewById(R.id.txt_plus);
+        txt_acc = (TextView) findViewById(R.id.txt_acc);
+        txt_cpr = (TextView) findViewById(R.id.txt_cpr);
+        txt_alert = (TextView) findViewById(R.id.txt_alert);
+        txt_info = (TextView) findViewById(R.id.txt_info);
+
+        txt_info.setVisibility(View.GONE);
+        ic_info.setVisibility(View.GONE);
+
+
+        ic_acc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(AEDMapActivity.this, LoginActivity.class));
+
+            }
+        });
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    //@Override
+    //public boolean onCreateOptionsMenu(Menu menu) {
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
+    //MenuInflater inflater = getMenuInflater();
+    //    inflater.inflate(R.menu.menu, menu);
+    //    return true;
 
-    }
+    //}
 
     private void getDataFromDatabase(){
 
@@ -277,7 +305,11 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private void hideUI(){
 
         ic_plus.setVisibility(View.GONE);
-        ic_list.setVisibility(View.GONE);
+        ic_acc.setVisibility(View.GONE);
+        ic_cpr.setVisibility(View.GONE);
+        ic_aed.setVisibility(View.GONE);
+        ic_info.setVisibility(View.GONE);
+
         addMarker.setVisibility(View.VISIBLE);
         cancel.setVisibility(View.VISIBLE);
         textConfirm.setVisibility(View.VISIBLE);
@@ -287,7 +319,11 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private void showUI(){
 
         ic_plus.setVisibility(View.VISIBLE);
-        ic_list.setVisibility(View.VISIBLE);
+        ic_acc.setVisibility(View.VISIBLE);
+        ic_cpr.setVisibility(View.VISIBLE);
+        ic_aed.setVisibility(View.VISIBLE);
+        ic_info.setVisibility(View.VISIBLE);
+
         addMarker.setVisibility(View.GONE);
         cancel.setVisibility(View.GONE);
         textConfirm.setVisibility(View.GONE);
