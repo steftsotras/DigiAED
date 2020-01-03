@@ -32,8 +32,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="150dp"
-        android:text="ADD AED"
-        android:visibility=""/>
+        android:text="ADD AED"/>
 
 
     <ImageView
@@ -54,8 +53,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="235dp"
-        android:text="LOGIN"
-        android:visibility=""/>
+        android:text="LOGIN"/>
 
     <ImageView
         android:id="@+id/ic_cpr"
@@ -75,8 +73,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="310dp"
-        android:text="LEARN CPR"
-        android:visibility=""/>
+        android:text="LEARN CPR"/>
 
     <ImageView
         android:id="@+id/ic_alert"
@@ -96,8 +93,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="395dp"
-        android:text="ALERT ME"
-        android:visibility=""/>
+        android:text="ALERT ME"/>
 
     <ImageView
         android:id="@+id/ic_info"
@@ -117,8 +113,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="3dp"
         android:layout_marginTop="475dp"
-        android:text="MARKER INFO"
-        android:visibility=""/>
+        android:text="MARKER INFO"/>
 
     <ImageView
         android:id="@+id/addMarker"
