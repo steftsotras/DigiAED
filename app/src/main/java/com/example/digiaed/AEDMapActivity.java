@@ -10,6 +10,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -122,6 +123,14 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 startActivity(new Intent(AEDMapActivity.this, LoginActivity.class));
 
+            }
+        });
+
+        ic_cpr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("https://www.youtube.com/watch?v=fb29LCjX4-E&t=81s");
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
             }
         });
 
@@ -272,7 +281,6 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                     menuUI = false;
                     hideUI();
-                    hideConfirm();
 
                 }
                 else{
@@ -347,7 +355,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 Log.d(TAG,"name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
 
-                String snippet = "'"+desc+"' "+geoPoint.getLatitude()+","+geoPoint.getLongitude();
+                String snippet = "'"+desc+"'";
 
                 MarkerOptions options = new MarkerOptions().position(new LatLng(geoPoint.getLatitude(),geoPoint.getLongitude()))
                                                             .title(name)
