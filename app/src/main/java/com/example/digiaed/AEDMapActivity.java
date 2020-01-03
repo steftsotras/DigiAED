@@ -81,13 +81,16 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private List<Map<String,Object>> markerMap;
 
+    private Boolean menuUI;
+    private Boolean markerInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aedmap);
 
-
-
+        markerInfo = false;
+        menuUI = true;
 
         currentMarkerLat=0.00;
         currentMarkerLon=0.00;
@@ -110,8 +113,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         txt_alert = (TextView) findViewById(R.id.txt_alert);
         txt_info = (TextView) findViewById(R.id.txt_info);
 
-        txt_info.setVisibility(View.GONE);
-        ic_info.setVisibility(View.GONE);
+        hideMarkerInfoIcon();
 
 
         ic_acc.setOnClickListener(new View.OnClickListener() {
@@ -218,6 +220,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                 currentMarkerLat=curraddmarker.getPosition().latitude;
                 currentMarkerLon=curraddmarker.getPosition().longitude;
                 hideUI();
+                showConfirm();
 
             }
         });
@@ -245,11 +248,68 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
 
+                hideConfirm();
                 showUI();
                 curraddmarker.remove();
 
                 getDeviceLocation();
 
+            }
+        });
+
+
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener()
+        {
+            @Override
+            public void onMapClick(LatLng arg0)
+            {
+                if(menuUI){
+                    if(markerInfo){
+                        hideMarkerInfoIcon();
+                        return;
+                    }
+
+                    menuUI = false;
+                    hideUI();
+                    hideConfirm();
+
+                }
+                else{
+                    menuUI = true;
+                    showUI();
+                }
+            }
+        });
+
+
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                showMarkerInfoIcon();
+
+                Log.d(TAG,marker.getTag().toString());
+
+                if(!markerMap.isEmpty()){
+                    for(int i=0; i<markerMap.size(); i++) {
+                        String id = (String) markerMap.get(i).get("Id");
+                        Log.d(TAG,id);
+                        if(id.equals(marker.getTag().toString())){
+                            String name = (String) markerMap.get(i).get("Name");
+                            String desc = (String) markerMap.get(i).get("Description");
+                            String imgUrl = (String) markerMap.get(i).get("ImageUrl");
+                            GeoPoint geoPoint = (GeoPoint) markerMap.get(i).get("Geolocation");
+
+                            Log.d(TAG,"Marker Clicked!! - name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
+
+                            break;
+                        }
+                    }
+                }
+
+                return false;
             }
         });
 
@@ -283,6 +343,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                 String name = (String) markerMap.get(i).get("Name");
                 String imgUrl = (String) markerMap.get(i).get("ImageUrl");
                 GeoPoint geoPoint = (GeoPoint) markerMap.get(i).get("Geolocation");
+                String id = (String) markerMap.get(i).get("Id");
 
                 Log.d(TAG,"name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
 
@@ -293,7 +354,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                                                            .snippet(snippet)
                                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.aedmap6));
 
-                mMap.addMarker(options);
+                mMap.addMarker(options).setTag(id);
             }
         }
         else{
@@ -302,18 +363,46 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+    private void showMarkerInfoIcon(){
+
+        txt_info.setVisibility(View.VISIBLE);
+        ic_info.setVisibility(View.VISIBLE);
+
+        markerInfo = true;
+
+    }
+
+    private void hideMarkerInfoIcon(){
+
+        txt_info.setVisibility(View.GONE);
+        ic_info.setVisibility(View.GONE);
+
+        markerInfo = false;
+
+    }
+
     private void hideUI(){
 
         ic_plus.setVisibility(View.GONE);
         ic_acc.setVisibility(View.GONE);
         ic_cpr.setVisibility(View.GONE);
-        ic_aed.setVisibility(View.GONE);
+        ic_alert.setVisibility(View.GONE);
         ic_info.setVisibility(View.GONE);
+
+        txt_plus.setVisibility(View.GONE);
+        txt_acc.setVisibility(View.GONE);
+        txt_cpr.setVisibility(View.GONE);
+        txt_alert.setVisibility(View.GONE);
+        txt_info.setVisibility(View.GONE);
+
+        markerInfo = false;
+    }
+
+    private void showConfirm(){
 
         addMarker.setVisibility(View.VISIBLE);
         cancel.setVisibility(View.VISIBLE);
         textConfirm.setVisibility(View.VISIBLE);
-
     }
 
     private void showUI(){
@@ -321,13 +410,21 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         ic_plus.setVisibility(View.VISIBLE);
         ic_acc.setVisibility(View.VISIBLE);
         ic_cpr.setVisibility(View.VISIBLE);
-        ic_aed.setVisibility(View.VISIBLE);
-        ic_info.setVisibility(View.VISIBLE);
+        ic_alert.setVisibility(View.VISIBLE);
+
+        txt_plus.setVisibility(View.VISIBLE);
+        txt_acc.setVisibility(View.VISIBLE);
+        txt_cpr.setVisibility(View.VISIBLE);
+        txt_alert.setVisibility(View.VISIBLE);
+    }
+
+    private void hideConfirm(){
 
         addMarker.setVisibility(View.GONE);
         cancel.setVisibility(View.GONE);
         textConfirm.setVisibility(View.GONE);
         DEFAULT_ZOOM = 15f;
+
     }
 
     private void getDeviceLocation(){
