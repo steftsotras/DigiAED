@@ -10,6 +10,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -84,6 +85,13 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private Boolean menuUI;
     private Boolean markerInfo;
 
+    private String marker_id;
+    private String marker_name;
+    private String marker_desc;
+    private String marker_pic;
+    private GeoPoint marker_geo;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,8 +100,15 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         markerInfo = false;
         menuUI = true;
 
+        marker_id = "";
+        marker_name = "";
+        marker_desc = "";
+        marker_geo = null;
+        marker_pic = "";
+
         currentMarkerLat=0.00;
         currentMarkerLon=0.00;
+
         markerMap = new ArrayList<Map<String,Object>>();
 
         getLocationPermission();
@@ -122,6 +137,14 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 startActivity(new Intent(AEDMapActivity.this, LoginActivity.class));
 
+            }
+        });
+
+        ic_cpr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("https://www.youtube.com/watch?v=fb29LCjX4-E&t=81s");
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
             }
         });
 
@@ -272,7 +295,6 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                     menuUI = false;
                     hideUI();
-                    hideConfirm();
 
                 }
                 else{
@@ -294,15 +316,29 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 if(!markerMap.isEmpty()){
                     for(int i=0; i<markerMap.size(); i++) {
-                        String id = (String) markerMap.get(i).get("Id");
-                        Log.d(TAG,id);
-                        if(id.equals(marker.getTag().toString())){
-                            String name = (String) markerMap.get(i).get("Name");
-                            String desc = (String) markerMap.get(i).get("Description");
-                            String imgUrl = (String) markerMap.get(i).get("ImageUrl");
-                            GeoPoint geoPoint = (GeoPoint) markerMap.get(i).get("Geolocation");
+                        marker_id = (String) markerMap.get(i).get("Id");
+                        //Log.d(TAG,id);
+                        if(marker_id.equals(marker.getTag().toString())){
+                            marker_name = (String) markerMap.get(i).get("Name");
+                            marker_desc = (String) markerMap.get(i).get("Description");
+                            marker_pic = (String) markerMap.get(i).get("ImageUrl");
+                            marker_geo = (GeoPoint) markerMap.get(i).get("Geolocation");
 
-                            Log.d(TAG,"Marker Clicked!! - name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
+                            Log.d(TAG,"Marker Clicked!! - name: "+marker_name+" desc: "+marker_desc+" geo: "+marker_geo+ " imgurl: "+marker_pic);
+
+                            ic_info.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i =new Intent(AEDMapActivity.this, MarkerInfoActivity.class);
+                                    i.putExtra("Id",marker_id);
+                                    i.putExtra("Name",marker_name);
+                                    i.putExtra("Description",marker_desc);
+                                    i.putExtra("Lat",marker_geo.getLatitude());
+                                    i.putExtra("Lon",marker_geo.getLongitude());
+                                    i.putExtra("imgUrl",marker_pic);
+                                    startActivity(i);
+                                }
+                            });
 
                             break;
                         }
@@ -347,7 +383,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 Log.d(TAG,"name: "+name+" desc: "+desc+" geo: "+geoPoint+ " imgurl: "+imgUrl);
 
-                String snippet = "'"+desc+"' "+geoPoint.getLatitude()+","+geoPoint.getLongitude();
+                String snippet = "'"+desc+"'";
 
                 MarkerOptions options = new MarkerOptions().position(new LatLng(geoPoint.getLatitude(),geoPoint.getLongitude()))
                                                             .title(name)

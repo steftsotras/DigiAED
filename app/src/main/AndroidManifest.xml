@@ -18,7 +18,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".MarkerInfoActivity"
+            android:parentActivityName=".AEDMapActivity"></activity>
+        <activity
+            android:name=".LogoutActivity"
+            android:parentActivityName=".AEDMapActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,26 +40,26 @@
 
         <service
             android:name=".FetchAddressIntentService"
-            android:exported="false"/>
+            android:exported="false" />
 
         <activity
             android:name=".AEDMapActivity"
-            android:label="@string/title_activity_aedmap" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <action android:name="android.intent.action.VIEW" />
+            android:label="@string/title_activity_aedmap">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
-        <activity android:name=".addMarkerActivity"
-                  android:label="@string/title_activity_add_marker"
-                  android:parentActivityName=".AEDMapActivity"></activity>
-
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity"
-            android:parentActivityName=".AEDMapActivity">
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+        <activity
+            android:name=".addMarkerActivity"
+            android:label="@string/title_activity_add_marker"
+            android:parentActivityName=".AEDMapActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:parentActivityName=".AEDMapActivity" />
         <activity android:name=".MainActivity" />
     </application>
 
