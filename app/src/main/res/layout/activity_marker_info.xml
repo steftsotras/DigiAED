@@ -21,7 +21,7 @@
 
         <LinearLayout
             android:id="@+id/linearLayout2"
-            android:layout_width="185dp"
+            android:layout_width="200dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="16dp"
@@ -29,21 +29,57 @@
             tools:layout_editor_absoluteX="63dp"
             tools:layout_editor_absoluteY="322dp">
 
-            <EditText
-                android:id="@+id/textAedName2"
-                android:layout_width="170dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:inputType="text" />
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="195dp"
+                android:layout_height="55dp"
+                >
+                <EditText
+                    android:id="@+id/textAedName2"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:ems="10"
+                    android:inputType="text" />
 
-            <EditText
-                android:id="@+id/textAedDescr2"
-                android:layout_width="170dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="15dp"
-                android:ems="10"
-                android:inputType="text" />
+                <ImageView
+                    android:id="@+id/ic_edit2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_edit"
+
+                    ></ImageView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout9"
+                android:layout_width="195dp"
+                android:layout_height="55dp"
+                >
+
+
+                <EditText
+                    android:id="@+id/textAedDescr2"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:ems="10"
+                    android:inputType="text" />
+
+                <ImageView
+                    android:id="@+id/ic_edit3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_edit"
+
+                    ></ImageView>
+
+
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -123,7 +159,7 @@
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:orientation="horizontal"
-            android:paddingLeft="14dp"
+            android:paddingLeft="1dp"
             android:paddingRight="16dp"
             android:paddingBottom="6dp">
 
@@ -131,7 +167,7 @@
                     android:id="@+id/ic_edit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_edit"
+                    android:src="@drawable/ic_editloc"
 
                 ></ImageView>
 
@@ -145,10 +181,9 @@
         android:layout_height="161dp"
         android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.551"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
-        app:layout_constraintTop_toEndOf="@+id/linearLayout5"
         tools:context=".MarkerInfoActivity" />
 
     <Button

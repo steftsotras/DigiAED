@@ -2,15 +2,43 @@ package com.example.digiaed;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class MarkerInfoActivity extends AppCompatActivity {
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Locale;
+
+public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String TAG = MarkerInfoActivity.class.getName();
 
     private EditText textName2;
     private EditText textDescr2;
@@ -20,12 +48,52 @@ public class MarkerInfoActivity extends AppCompatActivity {
     private Button editAed;
     private ImageView imgAdd2;
 
+    private GoogleMap mMap;
+    private Intent intent;
+
+    private double lat;
+    private double lon;
+    private String marker_id;
+    private String marker_name;
+    private String marker_desc;
+    private String marker_pic;
+
+    private List<Address> addresses;
+
+    private boolean showAddress;
+    private Uri imguri=null;
+    private StorageReference mStorageRef;
+
+    private String imgUrl;
+    private addMarkerActivity.AddressResultReceiver resultReceiver;
+
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marker_info);
 
+
+        showAddress=false;
+        imgUrl = "";
+
+        mStorageRef = FirebaseStorage.getInstance().getReference("Images");
+        db = FirebaseFirestore.getInstance();
+
+        //Call async intent to get location
+        intent = getIntent();
+        lat = intent.getDoubleExtra("Lat",0.00);
+        lon = intent.getDoubleExtra("Lon",0.00);
+
+        //startIntentService(lat,lon);
+        getAddress(lat,lon);
+        initMap();
+
+        marker_id= intent.getStringExtra("Id");
+        marker_name= intent.getStringExtra("Name");
+        marker_desc= intent.getStringExtra("Description");
+        marker_pic= intent.getStringExtra("imgUrl");
 
         textAddress2 = (TextView) findViewById(R.id.textAedAdr2);
         textDescr2 = (EditText) findViewById(R.id.textAedDescr2);
@@ -34,8 +102,144 @@ public class MarkerInfoActivity extends AppCompatActivity {
         editAed = (Button) findViewById(R.id.btnEditAed);
         imgAdd2 = (ImageView) findViewById(R.id.imgAdd2);
 
+        textDescr2.setText(marker_desc);
+        textName2.setText(marker_name);
 
+        Log.d(TAG,marker_pic);
+
+        if(!marker_pic.equals("")){
+            Log.d(TAG,"mpika");
+            //Drawable img = LoadImageFromWebOperations(marker_pic);
+            //imgAdd2.setImageDrawable(img);
+
+            new DownloadImageTask(imgAdd2)
+                    .execute(marker_pic);
+
+        }
 
 
     }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    public static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            //Log.d(TAG,e.getMessage());
+            Drawable d = Drawable.createFromStream(is, "src");
+            return d;
+        } catch (Exception e) {
+            Log.d(TAG,e.getMessage());
+            return null;
+        }
+    }
+
+    //Initialize Map
+    public void initMap(){
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map2);
+
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        //******************
+        //SET MAP
+        //******************
+        mMap = googleMap;
+
+        LatLng markerInfo = new LatLng(lat, lon);
+        Marker mMarker = mMap.addMarker(new MarkerOptions().position(markerInfo));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerInfo, 17f));
+
+
+        //If fetching address was successfull show address data
+        if(showAddress){
+
+            String address = addresses.get(0).getAddressLine(0); //0 to obtain first possible address
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+
+            String title = address + ", " + city + ", " + state;
+
+            mMarker.setTitle(title);
+
+            textAddress2.setText(title + "\n" + country + ", " + postalCode);
+
+        }
+        else{
+            mMarker.setTitle("Lat: "+lat+", Lon: "+lon);
+        }
+    }
+
+
+    //Geocoder Location Address
+    public void getAddress(double lat, double lon){
+        String errorMessage = "";
+        addresses=null;
+
+        Geocoder geocoder = new Geocoder(MarkerInfoActivity.this, Locale.getDefault());
+        try{
+
+            addresses = geocoder.getFromLocation(lat, lon, 1); //1 num of possible location returned
+
+        } catch (IOException ioException) {
+            // Catch network or other I/O problems.
+            errorMessage = "service not available";
+            Log.e(TAG, errorMessage, ioException);
+
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // Catch invalid latitude or longitude values.
+            errorMessage = "invalid lat lon";
+            Log.e(TAG, errorMessage + ". " +
+                    "Latitude = " + lat +
+                    ", Longitude = " +
+                    lon, illegalArgumentException);
+        }
+
+        // Handle case where no address was found.
+        if (addresses == null || addresses.size()  == 0) {
+            if (errorMessage.isEmpty()) {
+                errorMessage = "No adrress found";
+                Log.e(TAG, errorMessage);
+            }
+            //deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
+        } else {
+
+            showAddress = true;
+            //Toast.makeText(addMarkerActivity.this, title, Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+
 }
