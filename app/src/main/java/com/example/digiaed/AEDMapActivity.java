@@ -475,7 +475,20 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             currentLocation = (Location) task.getResult();
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),DEFAULT_ZOOM);
+                            double lati = 0.00;
+                            double loni = 0.00;
+
+                            if(currentLocation != null){
+                                lati = currentLocation.getLatitude();
+                                loni = currentLocation.getLongitude();
+                                Log.d(TAG,"komple "+lati+", "+loni);
+                                moveCamera(new LatLng(lati,loni),DEFAULT_ZOOM);
+                            }
+                            else{
+                                getDeviceLocation();
+                                Log.d(TAG,"godaaaammmit!!");
+                            }
+
                         }
                     }
                 });

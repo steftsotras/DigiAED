@@ -1,7 +1,10 @@
 package com.example.digiaed;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,11 +15,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,16 +31,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -108,17 +122,151 @@ public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyC
         Log.d(TAG,marker_pic);
 
         if(!marker_pic.equals("")){
-            Log.d(TAG,"mpika");
-            //Drawable img = LoadImageFromWebOperations(marker_pic);
-            //imgAdd2.setImageDrawable(img);
-
             new DownloadImageTask(imgAdd2)
                     .execute(marker_pic);
-
         }
 
 
+        //Listeners
+
+        imgAdd2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileChooser();
+            }
+        });
+
+        editAed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                progressBar8.setVisibility(View.VISIBLE);
+
+                //Upload image if there is one
+                FileUploader();
+
+            }
+        });
+
+
+
     }
+
+    //Put in Cloud Firestore
+    public void editCollection(){
+
+        //Fetch texts
+        String AEDName = textName2.getText().toString();
+        String AEDDescr = textDescr2.getText().toString();
+
+        if(AEDName =="" || AEDDescr==""){
+            Toast.makeText(MarkerInfoActivity.this, "Enter Name and Description", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        GeoPoint geoloc = new GeoPoint(lat, lon);
+
+        //Save to Database
+        Map<String, Object> aed = new HashMap<>();
+        aed.put("Description",AEDDescr);
+        aed.put("Geolocation",geoloc);
+        aed.put("ImageUrl",imgUrl);
+        aed.put("Name",AEDName);
+
+
+        Log.d(TAG,"Image Url after putting it in the database"+imgUrl);
+
+        db.collection("AEDMap").document(marker_id).set(aed).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    progressBar8.setVisibility(View.GONE);
+                    startActivity(new Intent(MarkerInfoActivity.this, AEDMapActivity.class));
+                }
+            })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        progressBar8.setVisibility(View.GONE);
+                    }
+                });
+
+    }
+
+    //Get Image Extension
+    public String getExtension(Uri uri){
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(cr.getType(uri));
+    }
+
+    //Upload Image to Firebase Storage
+    private void FileUploader() {
+
+        if (imguri != null) {
+
+
+            StorageReference ref = mStorageRef.child(System.currentTimeMillis() + "." + getExtension(imguri));
+
+            ref.putFile(imguri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            Task<Uri> downloadUrl = taskSnapshot.getStorage().getDownloadUrl();
+                            downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+
+                                    if (uri.toString() != null) {
+                                        imgUrl = uri.toString();
+                                    }
+                                    Log.d(TAG, "Image Upload Success, uri.toString: " + uri.toString());
+                                    Log.d(TAG, "Image Upload Success, imgUrl: " + imgUrl);
+
+                                    editCollection();
+                                }
+
+                            });
+
+                            // Get a URL to the uploaded content
+
+                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Log.d(TAG, "Image Failed to Upload");
+                        }
+                    });
+        }
+        else{
+
+            imgUrl = "";
+            editCollection();
+        }
+    }
+
+    //Choose Picture
+    public void FileChooser(){
+        Intent fileintent = new Intent();
+        fileintent.setType("image/'");
+        fileintent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(fileintent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+            imguri=data.getData();
+            imgAdd2.setImageURI(imguri);
+
+        }
+    }
+
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
