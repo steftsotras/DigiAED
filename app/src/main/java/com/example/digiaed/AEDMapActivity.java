@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -64,12 +65,14 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private ImageView addMarker;
     private ImageView cancel;
     private TextView textConfirm;
+    private ImageView ic_reports;
 
     private TextView txt_plus;
     private TextView txt_acc;
     private TextView txt_cpr;
     private TextView txt_alert;
     private TextView txt_info;
+    private TextView txt_reports;
 
     private Location currentLocation;
     private double currentMarkerLat;
@@ -79,7 +82,7 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private Toolbar toolbar;
     private AppCompatDelegate delegate;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db;
     private List<Map<String,Object>> markerMap;
 
     private Boolean menuUI;
@@ -90,6 +93,12 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private String marker_desc;
     private String marker_pic;
     private GeoPoint marker_geo;
+
+    private ArrayList<String> admins;
+    private Boolean adminEkav;
+    private Boolean adminDimos;
+
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -106,6 +115,15 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         marker_geo = null;
         marker_pic = "";
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        adminDimos = false;
+        adminEkav = false;
+        admins = new ArrayList<String>();
+        admins.add("dimos01@gmail.com");
+        admins.add("ekav01@gmail.com");
+
         currentMarkerLat=0.00;
         currentMarkerLon=0.00;
 
@@ -121,15 +139,19 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         addMarker = (ImageView) findViewById(R.id.addMarker);
         cancel = (ImageView) findViewById(R.id.cancel);
         textConfirm = (TextView) findViewById(R.id.textConfirm);
+        ic_reports = (ImageView) findViewById(R.id.ic_reports);
 
         txt_plus = (TextView) findViewById(R.id.txt_plus);
         txt_acc = (TextView) findViewById(R.id.txt_acc);
         txt_cpr = (TextView) findViewById(R.id.txt_cpr);
         txt_alert = (TextView) findViewById(R.id.txt_alert);
         txt_info = (TextView) findViewById(R.id.txt_info);
+        txt_reports = (TextView) findViewById(R.id.txt_reports);
 
         hideMarkerInfoIcon();
+        hideReportIcon();
 
+        checkAdmin();
 
         ic_acc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +170,13 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
+        ic_reports.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(AEDMapActivity.this, ShowReportActivity.class));
+            }
+        });
+
     }
 
     //@Override
@@ -158,6 +187,29 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     //    return true;
 
     //}
+
+    private void checkAdmin(){
+
+        if(mAuth.getCurrentUser() != null){
+
+            String userEmail = mAuth.getCurrentUser().getEmail();
+            Log.d(TAG,"Onoma to xrhsthhh : "+userEmail);
+            if(userEmail.equals(admins.get(0))){
+                adminDimos = true;
+                Log.d(TAG,"admin Dimos");
+
+                showReportIcon();
+            }
+            else if(userEmail.equals(admins.get(1))){
+                adminEkav = true;
+                Log.d(TAG,"admin Ekav");
+
+                showReportIcon();
+            }
+        }
+
+
+    }
 
     private void getDataFromDatabase(){
 
@@ -293,13 +345,21 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                         return;
                     }
 
+                    if(adminEkav || adminDimos){
+                        hideReportIcon();
+                    }
+
                     menuUI = false;
                     hideUI();
+
 
                 }
                 else{
                     menuUI = true;
                     showUI();
+                    if(adminEkav || adminDimos){
+                        showReportIcon();
+                    }
                 }
             }
         });
@@ -397,6 +457,16 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
             Log.d(TAG,"markeMap is Empty");
         }
 
+    }
+
+    private void showReportIcon(){
+        txt_reports.setVisibility(View.VISIBLE);
+        ic_reports.setVisibility(View.VISIBLE);
+    }
+
+    private void hideReportIcon(){
+        txt_reports.setVisibility(View.GONE);
+        ic_reports.setVisibility(View.GONE);
     }
 
     private void showMarkerInfoIcon(){
