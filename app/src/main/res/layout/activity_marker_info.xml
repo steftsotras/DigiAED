@@ -186,16 +186,34 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5"
         tools:context=".MarkerInfoActivity" />
 
-    <Button
-        android:id="@+id/btnEditAed"
-        android:layout_width="168dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:text="Edit Marker"
+
+    <LinearLayout
+        android:id="@+id/linearLayout10"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar8" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBar8">
 
+        <Button
+        android:id="@+id/btnEditAed"
+        android:layout_width="168dp"
+        android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+        android:text="Edit Marker" />
 
+        <Button
+            android:id="@+id/btnReport"
+            android:layout_width="168dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorRed"
+            android:text="Report Problem" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

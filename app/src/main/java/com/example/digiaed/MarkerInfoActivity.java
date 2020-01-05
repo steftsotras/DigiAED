@@ -61,6 +61,7 @@ public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyC
     private TextView textAddress2;
     private Button editAed;
     private ImageView imgAdd2;
+    private Button btn_report;
 
     private GoogleMap mMap;
     private Intent intent;
@@ -79,7 +80,6 @@ public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyC
     private StorageReference mStorageRef;
 
     private String imgUrl;
-    private addMarkerActivity.AddressResultReceiver resultReceiver;
 
     private FirebaseFirestore db;
 
@@ -115,11 +115,12 @@ public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyC
         progressBar8 = (ProgressBar) findViewById(R.id.progressBar8);
         editAed = (Button) findViewById(R.id.btnEditAed);
         imgAdd2 = (ImageView) findViewById(R.id.imgAdd2);
+        btn_report = (Button) findViewById(R.id.btnReport);
 
         textDescr2.setText(marker_desc);
         textName2.setText(marker_name);
 
-        Log.d(TAG,marker_pic);
+        //Log.d(TAG,marker_pic);
 
         if(!marker_pic.equals("")){
             new DownloadImageTask(imgAdd2)
@@ -128,6 +129,16 @@ public class MarkerInfoActivity extends AppCompatActivity implements OnMapReadyC
 
 
         //Listeners
+
+        btn_report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent i =new Intent(MarkerInfoActivity.this, ReportActivity.class);
+                i.putExtra("Id",marker_id);
+                startActivity(i);
+            }
+        });
 
         imgAdd2.setOnClickListener(new View.OnClickListener() {
             @Override
