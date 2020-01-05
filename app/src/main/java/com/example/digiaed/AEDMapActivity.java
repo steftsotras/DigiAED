@@ -98,6 +98,9 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
     private Boolean adminEkav;
     private Boolean adminDimos;
 
+    double lati;
+    double loni;
+
     private FirebaseAuth mAuth;
 
 
@@ -108,6 +111,9 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
 
         markerInfo = false;
         menuUI = true;
+
+        lati = 0.00;
+        loni = 0.00;
 
         marker_id = "";
         marker_name = "";
@@ -173,7 +179,11 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         ic_reports.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AEDMapActivity.this, ShowReportActivity.class));
+
+                Intent i =new Intent(AEDMapActivity.this, ShowReportActivity.class);
+                i.putExtra("Lat",lati);
+                i.putExtra("Lon",loni);
+                startActivity(i);
             }
         });
 
@@ -545,8 +555,6 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             currentLocation = (Location) task.getResult();
-                            double lati = 0.00;
-                            double loni = 0.00;
 
                             if(currentLocation != null){
                                 lati = currentLocation.getLatitude();
