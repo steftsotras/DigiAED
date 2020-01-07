@@ -22,7 +22,7 @@
             android:parentActivityName=".AEDMapActivity"></activity>
         <activity
             android:name=".ReportActivity"
-            android:parentActivityName=".MarkerInfoActivity" />
+            android:parentActivityName=".AEDMapActivity" />
         <activity
             android:name=".MarkerInfoActivity"
             android:parentActivityName=".AEDMapActivity" />

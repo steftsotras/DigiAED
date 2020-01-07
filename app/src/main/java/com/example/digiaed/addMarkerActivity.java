@@ -186,42 +186,49 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
     //Upload Image to Firebase Storage
     private void FileUploader(){
 
-        StorageReference ref = mStorageRef.child(System.currentTimeMillis()+"."+getExtension(imguri));
+        if (imguri != null) {
 
-        ref.putFile(imguri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            StorageReference ref = mStorageRef.child(System.currentTimeMillis() + "." + getExtension(imguri));
 
-                        Task<Uri> downloadUrl = taskSnapshot.getStorage().getDownloadUrl();
-                        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
+            ref.putFile(imguri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                if(uri.toString()!=null) {
-                                    imgUrl = uri.toString();
+                            Task<Uri> downloadUrl = taskSnapshot.getStorage().getDownloadUrl();
+                            downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+
+                                    if (uri.toString() != null) {
+                                        imgUrl = uri.toString();
+                                    }
+                                    Log.d(TAG, "Image Upload Success, uri.toString: " + uri.toString());
+                                    Log.d(TAG, "Image Upload Success, imgUrl: " + imgUrl);
+
+                                    addCollection();
                                 }
-                                Log.d(TAG,"Image Upload Success, uri.toString: "+uri.toString());
-                                Log.d(TAG,"Image Upload Success, imgUrl: "+imgUrl);
 
-                                addCollection();
-                            }
+                            });
 
-                        });
+                            // Get a URL to the uploaded content
 
-                        // Get a URL to the uploaded content
+                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Log.d(TAG, "Image Failed to Upload");
+                        }
+                    });
+        }
+        else{
 
-                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        Log.d(TAG,"Image Failed to Upload");
-                    }
-                });
-
+            imgUrl = "";
+            addCollection();
+        }
     }
 
     //Choose Picture
