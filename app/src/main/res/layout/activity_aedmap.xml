@@ -161,7 +161,7 @@
         android:layout_height="45dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="430dp"
+        android:layout_marginTop="350dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_report"></ImageView>
 
@@ -172,7 +172,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="3dp"
-        android:layout_marginTop="475dp"
+        android:layout_marginTop="395dp"
         android:text="REPORTS MAP"/>
 
 

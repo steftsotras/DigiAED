@@ -210,10 +210,6 @@ public class addMarkerActivity extends AppCompatActivity implements OnMapReadyCa
                                 }
 
                             });
-
-                            // Get a URL to the uploaded content
-
-                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

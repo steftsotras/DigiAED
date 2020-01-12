@@ -203,7 +203,6 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
         if(mAuth.getCurrentUser() != null){
 
             String userEmail = mAuth.getCurrentUser().getEmail();
-            Log.d(TAG,"Onoma to xrhsthhh : "+userEmail);
             if(userEmail.equals(admins.get(0))){
                 adminDimos = true;
                 Log.d(TAG,"admin Dimos");
@@ -217,8 +216,6 @@ public class AEDMapActivity extends AppCompatActivity implements OnMapReadyCallb
                 showReportIcon();
             }
         }
-
-
     }
 
     private void getDataFromDatabase(){
